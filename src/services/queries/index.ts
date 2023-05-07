@@ -1,0 +1,1 @@
+export {default as GET_TRANSACTIONS_QUERY} from './queries';
