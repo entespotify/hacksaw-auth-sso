@@ -1,10 +1,21 @@
+export type Scalars = {
+  ID: string;
+};
+
 export type Transaction = {
-    id: String;
-    title: String;
-    description: String;
-    amount: Number;
-}
+  id: string;
+  title: string;
+  description: string;
+  amount: number;
+};
 
 export type GetAllTransactionsResponse = {
-    transactions: Transaction[]
-}
+  transactions: Transaction[];
+};
+
+export type GetAllTransactionsInput = {
+  id: Scalars['ID'];
+  title: string;
+  description: string;
+  amount: number;
+};

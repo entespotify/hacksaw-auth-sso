@@ -1,12 +1,9 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Main from './pages/main';
+import Home from './pages/home';
 
 function App() {
   return (
     <div className="App">
-      <Main/>
+      <Home/>
     </div>
   );
 }
