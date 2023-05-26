@@ -5,7 +5,7 @@ COPY package.json \
      /usr/web/
 
 WORKDIR /usr/web/
-RUN npm ci
+RUN npm install
 
 COPY public/ /usr/web/public/
 COPY src/ /usr/web/src/
