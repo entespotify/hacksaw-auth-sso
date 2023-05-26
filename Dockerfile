@@ -2,6 +2,7 @@ FROM node:16.15.0-alpine AS builder
 
 COPY package.json \
      package-lock.json \
+     tsconfig.json \
      /usr/web/
 
 WORKDIR /usr/web/
