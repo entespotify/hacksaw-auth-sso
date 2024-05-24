@@ -1,0 +1,80 @@
+import { FC, useEffect, useState } from "react";
+import Box from '@mui/material/Box';
+import { DataGrid, GridCallbackDetails, GridColDef, GridRenderCellParams, GridRowParams, GridToolbar, MuiEvent } from '@mui/x-data-grid';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import FolderIcon from '@mui/icons-material/Folder';
+import { useDispatch } from "react-redux";
+
+import { useFilesQuery } from "../../services/apis";
+import { FileType } from "../../types/file";
+import FilesToolBar from "../files-toolbar/FilesToolBar";
+import { setPath, setItem } from "../../services/fileSlice";
+
+const filesInit: FileType[] = [];
+
+const columns: GridColDef<(typeof filesInit)[number]>[] = [
+	{
+		field: 'name',
+		renderHeader: () => {
+			return <>
+				<strong>Name</strong>
+			</>
+		},
+		width: 300,
+		renderCell: (params: GridRenderCellParams<FileType>) => {
+			return <div style={{display: "flex", alignItems: "center", gap: "5px"}}>
+				{params.row.type === "folder"? <FolderIcon/> : <InsertDriveFileIcon/>}
+				{params.value}
+			</div>
+		}
+	},
+	{
+		field: 'size',
+		headerName: 'Size',
+		type: 'number',
+		width: 110,
+	},
+	{
+		field: 'createdAt',
+		headerName: 'Created',
+		sortable: false,
+		width: 220,
+	},
+];
+
+
+const AllFiles: FC = () => {
+
+	const [files, setFiles] = useState<FileType[]>([]);
+
+	const allFiles = useFilesQuery("");
+
+	const dispatch = useDispatch();
+	
+	const handleRowClick = (params: GridRowParams, event: MuiEvent, details: GridCallbackDetails) => {
+		dispatch(setItem({item: params.row.name}));
+	}
+
+	useEffect(() => {
+		if (allFiles.data) {
+			setFiles(allFiles.data.files);
+		}
+	}, [allFiles]);
+
+	return (
+		<>
+			<Box sx={{ width: '100%', height: '93.3vh' }}>
+				<DataGrid
+					rows={files}
+					columns={columns}
+					hideFooter
+					slots={{ toolbar: FilesToolBar }}
+					onRowClick={handleRowClick}
+				
+				/>
+			</Box>
+		</>
+	);
+};
+
+export default AllFiles;

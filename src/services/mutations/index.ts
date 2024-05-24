@@ -1,1 +1,0 @@
-export {default as ADD_NEW_TRANSACTIONS_MUTATION} from './add-new-transaction';
