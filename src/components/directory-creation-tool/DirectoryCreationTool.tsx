@@ -4,6 +4,7 @@ import { FC, useState } from "react";
 
 import { useCreateDIrectoryMutation } from "../../services/apis";
 import { DirectoryCreationRequestType } from "../../types/file";
+import { store } from "../../services/store";
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -33,7 +34,8 @@ const DirectoryCreationTool: FC = () => {
     const handleCreateDirectory = () => {
         if(dirname) {
             let reqDirName: DirectoryCreationRequestType = {
-                dirname: dirname
+                dirname: dirname,
+                path: store.getState().files.path
             };
             createDirectory(reqDirName);
         }

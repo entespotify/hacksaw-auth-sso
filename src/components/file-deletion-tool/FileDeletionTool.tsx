@@ -12,7 +12,9 @@ const FileDeletionTool: FC = () => {
     const [doDelete, isLoading] = useDeleteMutation();
 
     const handleDelete = () => {
-        doDelete({path: store.getState().files.item});
+        let currentPath = store.getState().files.path;
+        let filename = store.getState().files.item;
+        doDelete({path: currentPath + '/' + filename});
         setDisableButton(true);
     }
 

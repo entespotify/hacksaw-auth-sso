@@ -6,5 +6,16 @@ export type FileType = {
 }
 
 export type DirectoryCreationRequestType = {
-    dirname: string
+    dirname: string,
+    path: string
+}
+
+export type UploadRequestType = {
+    body: FormData,
+    path: string
+}
+
+export type BreadcrumbType = {
+    name: string,
+    path: string
 }

@@ -2,9 +2,10 @@ import { BaseQueryApi, FetchArgs, createApi } from "@reduxjs/toolkit/query/react
 import { RootState } from "./store";
 import { login, logout } from "./authSlice";
 import { redirect } from "react-router-dom";
+import { UploadRequestType } from "../types/file";
 
-const BASE_URL = "http://localhost:4000";
-// const BASE_URL = "http://bullseye.local:4000";
+// const BASE_URL = "http://localhost:4000";
+const BASE_URL = "http://bullseye.local:4000";
 
 const fetchClient = async (args: FetchArgs, api: BaseQueryApi) => {
 	try {
@@ -17,11 +18,15 @@ const fetchClient = async (args: FetchArgs, api: BaseQueryApi) => {
 			headers: headers as Headers,
 			body: JSON.stringify(args.body),
 		}
+
+		if(args.params) {
+			console.log("setting params:", args.params)
+			args.url = args.url + "?path=" + args.params.path
+		}
+
 		if(args.body instanceof FormData) {
-			console.log("Body is Form data");
 			options["body"] = args.body
 		} else {
-			console.log("Body is json");
 			headers['Content-Type'] = "application/json";
 		}
 		let response = await fetch(BASE_URL + args.url, options);
@@ -45,8 +50,6 @@ const customBaseQuery = async (
 ) => {
 	try {
 
-		console.log("body is formdata:", body instanceof FormData);
-
 		let token: string = (api.getState() as RootState).auth.token;
 		if (!token) {
 			let localToken: string | null = localStorage.getItem('token');
@@ -59,11 +62,16 @@ const customBaseQuery = async (
 			"Authorization": `Bearer ${token}`
 		}
 
+		if(variables.url === "/files") {
+			console.log("setting query param for request:", (api.getState() as RootState).files.path);
+			variables.params.path = variables.params.path ? variables.params.path : (api.getState() as RootState).files.path
+		}
+
 		let args: FetchArgs = {
 			url: variables.url,
 			body: body,
 			method: variables.method,
-			mode: "no-cors",
+			params: variables.params,
 			headers: {
 				...headers
 			},
@@ -93,20 +101,26 @@ export const baseApi = createApi({
 			})
 		}),
 		files: builder.query({
-			query: () => ({
+			query: (path: string) => ({
 				variables: {
 					url: '/files',
-					method: 'GET'
+					method: 'GET',
+					params: {
+						path: path
+					}
 				}
 			}),
 			providesTags: ['Files']
 		}),
 		uploadFiles: builder.mutation({
-			query: (body: FormData) => ({
-				body: body,
+			query: (uploadType: UploadRequestType) => ({
+				body: uploadType.body,
 				variables: {
 					url: '/upload/file',
-					method: 'POST'
+					method: 'POST',
+					params: {
+						path: uploadType.path
+					}
 				}
 			}),
 			invalidatesTags: ['Files']

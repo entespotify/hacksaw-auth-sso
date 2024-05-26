@@ -8,7 +8,7 @@ interface FileState {
 }
 
 const initialState: FileState = {
-	path: '',
+	path: '/',
 	item: '',
 	transferPath: '',
 	transferAction: ''

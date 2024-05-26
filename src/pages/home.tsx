@@ -7,10 +7,6 @@ const drawerItems: drawerItemType[] = [
 	{
 		label: "App",
 		value: "home"
-	},
-	{
-		label: "Web",
-		value: "home"
 	}
 ]
 
