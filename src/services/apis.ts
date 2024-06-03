@@ -1,13 +1,13 @@
 import { BaseQueryApi, FetchArgs, createApi } from "@reduxjs/toolkit/query/react";
 import { RootState } from "./store";
 import { login, logout } from "./authSlice";
-import { redirect } from "react-router-dom";
 import { UploadRequestType } from "../types/file";
 
 // const BASE_URL = "http://localhost:4000";
 const BASE_URL = "http://bullseye.local:4000";
 
-const fetchClient = async (args: FetchArgs, api: BaseQueryApi) => {
+const fetchClient = async (args: FetchArgs) : Promise<Response> => {
+	let response: Response = new Response();
 	try {
 		let passedHeaders = args.headers;
 		let headers: Headers | any = {
@@ -29,19 +29,11 @@ const fetchClient = async (args: FetchArgs, api: BaseQueryApi) => {
 		} else {
 			headers['Content-Type'] = "application/json";
 		}
-		let response = await fetch(BASE_URL + args.url, options);
-		if (response.ok) {
-			return response.json();
-		} else {
-			if(response.status === 401 || response.status === 403) {
-				api.dispatch(logout());
-				redirect("/login");
-			}
-			throw Error("Authentication failed");
-		}
+		response = await fetch(BASE_URL + args.url, options);
 	} catch (error) {
 		console.error("Error in http call:", error);
 	}
+	return response;
 }
 
 const customBaseQuery = async (
@@ -78,7 +70,17 @@ const customBaseQuery = async (
 			credentials: "include"
 		}
 
-		let result = await fetchClient(args, api);
+		let result;
+		let response = await fetchClient(args);
+		if (response.ok) {
+			result = response.json();
+		} else {
+			if(response.status === 401 || response.status === 403) {
+				api.dispatch(logout());
+				//done in a dirty way till we figure out a better way to redirect to login
+				window.location.reload();
+			}
+		}
 		return { data: result };
 	} catch (error: any | Error) {
 		console.log("Error occurred while getting api response:", error);

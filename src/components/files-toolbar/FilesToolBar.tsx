@@ -29,25 +29,28 @@ const FilesToolBar: FC = () => {
         if (path !== pathState) {
             dispatch(setPath({ path: path }));
             allFiles.refetch();
-        } else {
-            console.log("Same path:", path);
         }
     }
 
     useEffect(() => {
         if (pathState) {
-            console.log("Path changed:", pathState);
             let breadcrumbItems: BreadcrumbType[] = [];
             let pathRoot: string = '';
-            let pathParts = pathState.split('/');
-            pathParts.map(pathPart => {
-                pathRoot = pathRoot.endsWith('/') ? pathRoot + pathPart : pathRoot + '/' + pathPart;
-                breadcrumbItems.push({
-                    name: pathPart === '' ? "root" : pathPart,
-                    path: pathRoot
+            if (pathState !== '/') {
+                let pathParts = pathState.split('/');
+                pathParts.map(pathPart => {
+                    pathRoot = pathRoot.endsWith('/') ? pathRoot + pathPart : pathRoot + '/' + pathPart;
+                    breadcrumbItems.push({
+                        name: pathPart === '' ? "root" : pathPart,
+                        path: pathRoot
+                    });
                 });
-                console.log("name:", pathPart === '' ? "root" : pathPart, "path:", pathRoot);
-            });
+            } else {
+                breadcrumbItems.push({
+                    name: 'root',
+                    path: pathState
+                })
+            }
             setBreadcrumbs(breadcrumbItems);
         }
     }, [pathState]);
@@ -55,7 +58,7 @@ const FilesToolBar: FC = () => {
     return (
         <GridToolbarContainer sx={{ flexDirection: 'column', alignItems: 'start' }}>
             <Stack direction="row" spacing={2} padding={1}>
-                <UploadTool/>
+                <UploadTool />
                 <DirectoryCreationTool />
                 <Button variant="outlined" size="small" startIcon={<FileCopyIcon />}>
                     Copy
