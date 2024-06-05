@@ -11,3 +11,16 @@ export function forceLogOut() {
         console.error("Error occurred while logging out user.", error);
     }
 }
+
+/**
+ * Joins the paths given, works similar to paths.join
+ * @param paths comma seperated array of paths
+ * @returns paths joined with '/'
+ */
+export function join(...paths: string[]) : string {
+    let joinedPath: string = '';
+    paths.map(path => {
+        joinedPath = path.startsWith('/') || joinedPath.endsWith('/') ? joinedPath + path : joinedPath + '/' + path;
+    })
+    return joinedPath;
+}

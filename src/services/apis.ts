@@ -1,10 +1,10 @@
 import { BaseQueryApi, FetchArgs, createApi } from "@reduxjs/toolkit/query/react";
 import { RootState } from "./store";
 import { login, logout } from "./authSlice";
-import { UploadRequestType } from "../types/file";
+import { TransferRequestType, UploadRequestType } from "../types/file";
 
-// const BASE_URL = "http://localhost:4000";
-const BASE_URL = "http://bullseye.local:4000";
+const BASE_URL = "http://localhost:4000";
+// const BASE_URL = "http://bullseye.local:4000";
 
 const fetchClient = async (args: FetchArgs) : Promise<Response> => {
 	let response: Response = new Response();
@@ -37,7 +37,7 @@ const fetchClient = async (args: FetchArgs) : Promise<Response> => {
 }
 
 const customBaseQuery = async (
-	{ body, variables }: { body?: string | FormData, variables?: any },
+	{ body, variables }: { body?: string | FormData | object, variables?: any },
 	api: BaseQueryApi
 ) => {
 	try {
@@ -137,6 +137,26 @@ export const baseApi = createApi({
 			}),
 			invalidatesTags: ['Files']
 		}),
+		copy: builder.mutation({
+			query: (params: TransferRequestType) => ({
+				body: params,
+				variables: {
+					url: '/copy',
+					method: 'POST'
+				}
+			}),
+			invalidatesTags: ['Files']
+		}),
+		move: builder.mutation({
+			query: (params: TransferRequestType) => ({
+				body: params,
+				variables: {
+					url: '/move',
+					method: 'POST'
+				}
+			}),
+			invalidatesTags: ['Files']
+		}),
 		delete: builder.mutation({
 			query: (path) => ({
 				body: path,
@@ -150,4 +170,4 @@ export const baseApi = createApi({
 	}),
 });
 
-export const { useLoginMutation, useFilesQuery, useUploadFilesMutation, useCreateDIrectoryMutation, useDeleteMutation } = baseApi;
+export const { useLoginMutation, useFilesQuery, useUploadFilesMutation, useCreateDIrectoryMutation, useCopyMutation, useMoveMutation, useDeleteMutation } = baseApi;

@@ -6,7 +6,7 @@ import { drawerItemType } from "../types/GenericTypes";
 const drawerItems: drawerItemType[] = [
 	{
 		label: "App",
-		value: "home"
+		value: "#/home"
 	}
 ]
 

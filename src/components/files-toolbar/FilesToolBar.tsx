@@ -1,8 +1,7 @@
-import { Stack, Button, Breadcrumbs, Link } from "@mui/material";
+import { Stack, Breadcrumbs, Link } from "@mui/material";
 import { GridToolbarContainer } from "@mui/x-data-grid";
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { FC, useEffect, useState } from "react";
 
 import DirectoryCreationTool from "../directory-creation-tool/DirectoryCreationTool";
@@ -10,9 +9,12 @@ import FileDeletionTool from "../file-deletion-tool/FileDeletionTool";
 import { setPath } from "../../services/fileSlice";
 import { useDispatch } from "react-redux";
 import { store } from "../../services/store";
-import { BreadcrumbType } from "../../types/file";
+import { BreadcrumbType, TransferActions } from "../../types/file";
 import { useFilesQuery } from "../../services/apis";
 import UploadTool from "../upload-tool/UploadTool";
+import FileTransferTool from "../file-transfer-tool/FileTransferTool";
+import PasteTool from "../paste-tool/Pastetool";
+import { join } from "../../services/utils";
 
 
 const FilesToolBar: FC = () => {
@@ -39,7 +41,7 @@ const FilesToolBar: FC = () => {
             if (pathState !== '/') {
                 let pathParts = pathState.split('/');
                 pathParts.map(pathPart => {
-                    pathRoot = pathRoot.endsWith('/') ? pathRoot + pathPart : pathRoot + '/' + pathPart;
+                    pathRoot = join(pathRoot, pathPart);
                     breadcrumbItems.push({
                         name: pathPart === '' ? "root" : pathPart,
                         path: pathRoot
@@ -60,15 +62,9 @@ const FilesToolBar: FC = () => {
             <Stack direction="row" spacing={2} padding={1}>
                 <UploadTool />
                 <DirectoryCreationTool />
-                <Button variant="outlined" size="small" startIcon={<FileCopyIcon />}>
-                    Copy
-                </Button>
-                <Button variant="outlined" size="small" startIcon={<DriveFileMoveIcon />}>
-                    Move
-                </Button>
-                <Button variant="outlined" size="small" startIcon={<ContentPasteIcon />}>
-                    Paste
-                </Button>
+                <FileTransferTool label="Copy" action={TransferActions.COPY} icon={<FileCopyIcon/>}/>
+                <FileTransferTool label="Move" action={TransferActions.MOVE} icon={<DriveFileMoveIcon/>}/>
+                <PasteTool/>
                 <FileDeletionTool />
             </Stack>
             <Breadcrumbs aria-label="breadcrumb">

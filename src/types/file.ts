@@ -15,7 +15,18 @@ export type UploadRequestType = {
     path: string
 }
 
+export type TransferRequestType = {
+    src: string,
+    dest: string
+}
+
 export type BreadcrumbType = {
     name: string,
     path: string
+}
+
+export enum TransferActions {
+    COPY,
+    MOVE,
+    NONE
 }

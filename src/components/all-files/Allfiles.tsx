@@ -10,6 +10,7 @@ import { FileType } from "../../types/file";
 import FilesToolBar from "../files-toolbar/FilesToolBar";
 import { setPath, setItem } from "../../services/fileSlice";
 import { store } from "../../services/store";
+import { join } from "../../services/utils";
 
 const filesInit: FileType[] = [];
 
@@ -69,11 +70,8 @@ const AllFiles: FC = () => {
 		let type = params.row.type;
 		if (type === "folder") {
 			let currentPath = store.getState().files.path;
-			dispatch(setPath({ path: currentPath.endsWith('/') ? currentPath + pathname : currentPath + '/' + pathname }));
-			console.log("state path:", currentPath);
+			dispatch(setPath({ path: join(currentPath, pathname) }));
 			allFiles.refetch();
-		} else {
-			console.log("Not a directory");
 		}
 	}
 
