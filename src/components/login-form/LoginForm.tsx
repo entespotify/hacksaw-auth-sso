@@ -2,7 +2,7 @@ import { FC, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useLoginMutation } from '../../services/apis';
+import { useLoginMutation } from '../../services/api/auth.api';
 import { login } from "../../services/authSlice";
 
 interface CustomLocationState {

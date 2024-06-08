@@ -1,7 +1,7 @@
 import { FC } from "react";
-import AllFiles from "../components/all-files/Allfiles";
 import AppView from "../components/app-view/AppView";
 import { drawerItemType } from "../types/GenericTypes";
+import AllApps from "../components/all-apps/AllApps";
 
 const drawerItems: drawerItemType[] = [
 	{
@@ -14,14 +14,14 @@ const drawerItems: drawerItemType[] = [
 	}
 ]
 
-const Home: FC = () => {
+const Web: FC = () => {
 	return (
 		<>
 			<AppView drawerItems={drawerItems}>
-				<AllFiles/>
+				<AllApps/>
 			</AppView>
 		</>
 	);
 };
 
-export default Home;
+export default Web;

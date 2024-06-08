@@ -3,7 +3,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { FC, useEffect, useState } from "react";
 
 import { store } from "../../services/store";
-import { useCopyMutation, useMoveMutation } from "../../services/apis";
+import { useCopyMutation, useMoveMutation } from "../../services/api/files.api";
 import { TransferActions, TransferRequestType } from "../../types/file";
 import { join } from "../../services/utils";
 

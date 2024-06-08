@@ -11,6 +11,7 @@ import { PublicLayout } from "./layouts/PublicLayout";
 import { ProtectedLayout } from "./layouts/ProtectedLayout";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/home";
+import Web from "./pages/web";
 
 function App() {
 	return (
@@ -22,6 +23,7 @@ function App() {
 					</Route>
 					<Route path="/" element={<ProtectedLayout />}>
 						<Route path="home" element={<Home />} />
+						<Route path="web" element={<Web />} />
 					</Route>
 					<Route index element={<Navigate to={"/home"} />} />
 					<Route path="*" element={<NotFound />} />

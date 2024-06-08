@@ -1,16 +1,16 @@
-import { FC, useEffect, useState } from "react";
 import Box from '@mui/material/Box';
-import { DataGrid, GridCallbackDetails, GridColDef, GridRenderCellParams, GridRowParams, MuiEvent } from '@mui/x-data-grid';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
+import { FC, useEffect, useState } from "react";
+import { DataGrid, GridColDef, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useDispatch } from "react-redux";
 
-import { useFilesQuery } from "../../services/api/files.api";
+import WebToolBar from "../web-toolbar/WebToolBar";
 import { FileType } from "../../types/file";
-import FilesToolBar from "../files-toolbar/FilesToolBar";
 import { setPath, setItem } from "../../services/fileSlice";
 import { store } from "../../services/store";
-import { formatBytes, formatDate, join } from "../../services/utils";
+import { join } from "../../services/utils";
+import { useAppsQuery } from "../../services/api/apps.api";
 
 const filesInit: FileType[] = [];
 
@@ -39,11 +39,6 @@ const columns: GridColDef<(typeof filesInit)[number]>[] = [
 		},
 		type: 'number',
 		width: 110,
-		renderCell: (params: GridRenderCellParams<FileType>) => {
-			return <div>
-				{params.row.type === "folder" ? "" : formatBytes(params.value)}
-			</div>
-		}
 	},
 	{
 		field: 'createdAt',
@@ -54,24 +49,19 @@ const columns: GridColDef<(typeof filesInit)[number]>[] = [
 		},
 		sortable: false,
 		width: 220,
-		renderCell: (params: GridRenderCellParams<FileType>) => {
-			return <div>
-				{formatDate(params.value)}
-			</div>
-		}
 	},
 ];
 
 
-const AllFiles: FC = () => {
+const AllApps: FC = () => {
 
 	const [files, setFiles] = useState<FileType[]>([]);
 
-	const allFiles = useFilesQuery("");
+	const allApps = useAppsQuery("/");
 
 	const dispatch = useDispatch();
 
-	const handleRowClick = (params: GridRowParams, event: MuiEvent, details: GridCallbackDetails) => {
+	const handleRowClick = (params: GridRowParams) => {
 		dispatch(setItem({ item: params.row.name }));
 	}
 
@@ -81,15 +71,15 @@ const AllFiles: FC = () => {
 		if (type === "folder") {
 			let currentPath = store.getState().files.path;
 			dispatch(setPath({ path: join(currentPath, pathname) }));
-			allFiles.refetch();
+			allApps.refetch();
 		}
 	}
 
 	useEffect(() => {
-		if (allFiles.data) {
-			setFiles(allFiles.data.files);
+		if (allApps.data) {
+			setFiles(allApps.data.files);
 		}
-	}, [allFiles]);
+	}, [allApps]);
 
 	return (
 		<>
@@ -98,7 +88,7 @@ const AllFiles: FC = () => {
 					rows={files}
 					columns={columns}
 					hideFooter
-					slots={{ toolbar: FilesToolBar }}
+					slots={{ toolbar: WebToolBar }}
 					sx={{ cursor: 'pointer' }}
 					onRowClick={handleRowClick}
 					onRowDoubleClick={handleRowDoubleClick}
@@ -108,4 +98,4 @@ const AllFiles: FC = () => {
 	);
 };
 
-export default AllFiles;
+export default AllApps;

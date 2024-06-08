@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import { store } from '../../services/store';
-import { useUploadFilesMutation } from '../../services/apis';
+import { useUploadFilesMutation } from '../../services/api/files.api';
 
 const UploadTool: FC = () => {
     const fileInput = useRef<HTMLInputElement>(null);

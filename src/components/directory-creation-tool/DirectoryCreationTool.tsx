@@ -2,7 +2,7 @@ import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material"
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import { FC, useState } from "react";
 
-import { useCreateDIrectoryMutation } from "../../services/apis";
+import { useCreateDIrectoryMutation } from "../../services/api/files.api";
 import { DirectoryCreationRequestType } from "../../types/file";
 import { store } from "../../services/store";
 

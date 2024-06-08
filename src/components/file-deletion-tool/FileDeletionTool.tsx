@@ -3,7 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { FC, useEffect, useState } from "react";
 
 import { store } from "../../services/store";
-import { useDeleteMutation } from "../../services/apis";
+import { useDeleteMutation } from "../../services/api/files.api";
 
 const FileDeletionTool: FC = () => {
 
