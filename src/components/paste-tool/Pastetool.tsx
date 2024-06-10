@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { CircularProgress, IconButton, Tooltip } from "@mui/material";
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { FC, useEffect, useState } from "react";
 
@@ -23,7 +23,7 @@ const PasteTool: FC = () => {
             src: join(transferPath, transferItem),
             dest: join(currentPath, transferItem)
         }
-        if(transferAction === TransferActions.COPY) {
+        if (transferAction === TransferActions.COPY) {
             doCopy(transferParams);
         } else if (transferAction === TransferActions.MOVE) {
             doMove(transferParams);
@@ -32,17 +32,19 @@ const PasteTool: FC = () => {
     }
 
     useEffect(() => {
-        if(store.getState().files.transferAction === TransferActions.COPY 
-        || store.getState().files.transferAction === TransferActions.MOVE) {
+        if (store.getState().files.transferAction === TransferActions.COPY
+            || store.getState().files.transferAction === TransferActions.MOVE) {
             setDisableButton(false);
         }
-	}, [store.getState().files.transferAction]);
+    }, [store.getState().files.transferAction]);
 
     return (
         <>
-            <Button variant="outlined" size="small" startIcon={<ContentPasteIcon />} onClick={handleDelete} disabled={disableButton}>
-                Paste
-            </Button>
+            <Tooltip title={"Paste"}>
+                <IconButton color="primary" size="large" onClick={handleDelete} disabled={disableButton}>
+                    {(!isLoadingCopy) ? <CircularProgress /> : <ContentPasteIcon fontSize="medium" />}
+                </IconButton>
+            </Tooltip>
         </>
     );
 };

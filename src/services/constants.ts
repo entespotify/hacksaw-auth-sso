@@ -1,0 +1,1 @@
+export const NAV_PORTION_OF_VH = 8;

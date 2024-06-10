@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import { ReactElement, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -16,7 +16,7 @@ const FileTransferTool = (props: FileTransferToolType) => {
 
     const { label, action, icon } = props;
     const dispatch = useDispatch();
-    const [disableButton, setDisableButton] = useState(true);
+    const [disableButton, setDisableButton] = useState(false);
 
     const handleActionClick = (action: TransferActions) => {
         let currentPath = store.getState().files.path;
@@ -35,9 +35,11 @@ const FileTransferTool = (props: FileTransferToolType) => {
 
     return (
         <>
-            <Button variant="outlined" size="small" startIcon={icon} onClick={() => handleActionClick(action)} disabled={disableButton}>
-                {label}
-            </Button>
+            <Tooltip title={label}>
+                <IconButton color="primary" size="small" onClick={() => handleActionClick(action)} disabled={disableButton}>
+                    {icon}
+                </IconButton>
+            </Tooltip>
         </>
     );
 };

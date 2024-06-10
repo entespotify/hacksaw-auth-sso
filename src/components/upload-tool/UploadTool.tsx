@@ -1,12 +1,14 @@
-import Button from '@mui/material/Button';
+import { FC, useEffect, useRef, useState, MouseEvent } from 'react';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { FC, useEffect, useRef, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
+import IconButton from '@mui/material/IconButton';
+import { Tooltip } from '@mui/material';
+
 import { store } from '../../services/store';
 import { useUploadFilesMutation } from '../../services/api/files.api';
+import DirectoryCreationTool from '../directory-creation-tool/DirectoryCreationTool';
 
 const UploadTool: FC = () => {
     const fileInput = useRef<HTMLInputElement>(null);
@@ -14,7 +16,7 @@ const UploadTool: FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [files, setFiles] = useState<FileList>();
     const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
@@ -55,7 +57,6 @@ const UploadTool: FC = () => {
 
     useEffect(() => {
         if (files) {
-            console.log("File selected:", files);
             for (let i = 0; i <= files.length; i++) {
                 let file = files.item(i);
                 if (file) {
@@ -70,16 +71,20 @@ const UploadTool: FC = () => {
 
     return (
         <div>
-            <Button
-                id="upload-button"
-                aria-controls={open ? 'upload-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-                variant="contained" size="small" startIcon={<AddIcon />}
-            >
-                Add
-            </Button>
+            <Tooltip title={"Add"} >
+                <IconButton
+                    id="upload-button"
+                    aria-controls={open ? 'upload-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleClick}
+                    size='large'
+                    color='primary'
+                    href=''
+                >
+                    <AddIcon fontSize='large' />
+                </IconButton>
+            </Tooltip>
             <Menu
                 id="upload-menu"
                 anchorEl={anchorEl}
@@ -89,12 +94,17 @@ const UploadTool: FC = () => {
                     'aria-labelledby': 'upload-button',
                 }}
             >
-                <MenuItem onClick={handleClickUploadFiles} sx={{fontSize: '14px'}}>
-                    <UploadFileIcon fontSize='small' /> FILE
-                </MenuItem>
-                <MenuItem onClick={handleClickUploadDirectory} sx={{fontSize: '14px'}}>
-                    <DriveFolderUploadIcon fontSize='small' /> DIRECTORY
-                </MenuItem>
+                <Tooltip title={"Upload File"}>
+                    <IconButton onClick={handleClickUploadFiles} size='large'>
+                        <UploadFileIcon fontSize='medium' color='success' />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={"Upload Directory"}>
+                    <IconButton onClick={handleClickUploadDirectory} size='large'>
+                        <DriveFolderUploadIcon fontSize='medium' color='info' />
+                    </IconButton>
+                </Tooltip>
+                <DirectoryCreationTool />
             </Menu>
             <input type="file" name="file" ref={fileInput} onChange={handleUpload} hidden />
         </div>

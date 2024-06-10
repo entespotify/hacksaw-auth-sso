@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { FC, useEffect, useState } from "react";
 
@@ -14,21 +14,23 @@ const FileDeletionTool: FC = () => {
     const handleDelete = () => {
         let currentPath = store.getState().files.path;
         let filename = store.getState().files.item;
-        doDelete({path: currentPath + '/' + filename});
+        doDelete({ path: currentPath + '/' + filename });
         setDisableButton(true);
     }
 
     useEffect(() => {
-        if(store.getState().files.item && store.getState().files.item != "") {
+        if (store.getState().files.item && store.getState().files.item != "") {
             setDisableButton(false);
         }
-	}, [store.getState().files.item]);
+    }, [store.getState().files.item]);
 
     return (
         <>
-            <Button variant="outlined" size="small" startIcon={<DeleteIcon />} onClick={handleDelete} disabled={disableButton}>
-                Delete
-            </Button>
+            <Tooltip title={"Delete"}>
+                <IconButton aria-label="Delete" color="error" size="small" onClick={handleDelete} disabled={disableButton}>
+                    <DeleteIcon fontSize="medium" />
+                </IconButton>
+            </Tooltip>
         </>
     );
 };

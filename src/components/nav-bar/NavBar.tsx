@@ -7,10 +7,11 @@ import IconButton from '@mui/material/IconButton';
 import { Link, Menu, MenuItem } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
-
-import { logout } from '../../services/authSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import { logout } from '../../services/authSlice';
+import { NAV_PORTION_OF_VH } from '../../services/constants';
 
 
 function NavBar() {
@@ -32,17 +33,17 @@ function NavBar() {
         navigate('/login', { replace: true });
     }
 
-    const globalConfigsList: React.ReactNode = 
-            <MenuItem key="xx" sx={{padding: "8px"}}>
-                <Link color={'inherit'} sx={{ display: 'flex' }} underline="none" onClick={handleLogOut}>
-                    <LogoutIcon/>
-                    Log out
-                </Link>
-            </MenuItem>
+    const globalConfigsList: React.ReactNode =
+        <MenuItem key="xx" sx={{ padding: "8px" }}>
+            <Link color={'inherit'} sx={{ display: 'flex' }} underline="none" onClick={handleLogOut}>
+                <LogoutIcon />
+                Log out
+            </Link>
+        </MenuItem>
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" color='secondary'>
+        <Box sx={{ flexGrow: 1, zIndex: 100, position: 'relative', minHeight: `${NAV_PORTION_OF_VH}vh` }}>
+            <AppBar position="static" color='secondary' sx={{ minHeight: `${NAV_PORTION_OF_VH}vh` }}>
                 <Toolbar variant="dense">
                     <Typography variant="h6" color="inherit" component="div" sx={{ flexGrow: 1, textAlign: "start" }}>
                         My Files

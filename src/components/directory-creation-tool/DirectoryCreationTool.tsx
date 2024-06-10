@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, Modal, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import { FC, useState } from "react";
 
@@ -32,7 +32,7 @@ const DirectoryCreationTool: FC = () => {
     }
 
     const handleCreateDirectory = () => {
-        if(dirname) {
+        if (dirname) {
             let reqDirName: DirectoryCreationRequestType = {
                 dirname: dirname,
                 path: store.getState().files.path
@@ -44,9 +44,11 @@ const DirectoryCreationTool: FC = () => {
 
     return (
         <>
-            <Button variant="outlined" size="small" startIcon={<CreateNewFolderIcon />} onClick={handleOpen}>
-                Add directory
-            </Button>
+            <Tooltip title={"Create Directory"}>
+                <IconButton onClick={handleOpen}>
+                    <CreateNewFolderIcon fontSize="medium" color="info" />
+                </IconButton>
+            </Tooltip>
             <Modal
                 open={open}
                 onClose={handleClose}
