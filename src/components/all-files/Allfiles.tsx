@@ -80,7 +80,7 @@ const AllApps: FC = () => {
 										{file.type === "folder" ? <FolderIcon /> : <InsertDriveFileIcon />} {file.name}
 									</div>
 								</TableCell>
-								<TableCell>{formatBytes(file.size)}</TableCell>
+								<TableCell>{file.type === "folder" ? '' : formatBytes(file.size)}</TableCell>
 								<TableCell>{formatDate(file.createdAt)}</TableCell>
 							</TableRow>
 						))}
