@@ -5,7 +5,7 @@ import AllApps from "../components/all-apps/AllApps";
 
 const drawerItems: drawerItemType[] = [
 	{
-		label: "App",
+		label: "Files",
 		value: "#/home"
 	},
 	{

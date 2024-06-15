@@ -1,5 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
+
 import customBaseQuery from "../customBaseQuery";
+import { UploadRequestType, TransferRequestType } from "../../types/file";
 
 export const appsApi = createApi({
 	baseQuery: customBaseQuery,
@@ -17,8 +19,61 @@ export const appsApi = createApi({
 				}
 			}),
 			providesTags: ['Apps']
-		})
+		}),
+		uploadFiles: builder.mutation({
+			query: (uploadType: UploadRequestType) => ({
+				body: uploadType.body,
+				variables: {
+					url: '/upload/file',
+					method: 'POST',
+					params: {
+						path: uploadType.path
+					}
+				}
+			}),
+			invalidatesTags: ['Apps']
+		}),
+		createDIrectory: builder.mutation({
+			query: (dirname) => ({
+				body: dirname,
+				variables: {
+					url: '/create/directory',
+					method: 'POST'
+				}
+			}),
+			invalidatesTags: ['Apps']
+		}),
+		copy: builder.mutation({
+			query: (params: TransferRequestType) => ({
+				body: params,
+				variables: {
+					url: '/copy',
+					method: 'POST'
+				}
+			}),
+			invalidatesTags: ['Apps']
+		}),
+		move: builder.mutation({
+			query: (params: TransferRequestType) => ({
+				body: params,
+				variables: {
+					url: '/move',
+					method: 'POST'
+				}
+			}),
+			invalidatesTags: ['Apps']
+		}),
+		delete: builder.mutation({
+			query: (path) => ({
+				body: path,
+				variables: {
+					url: '/delete',
+					method: 'POST'
+				}
+			}),
+			invalidatesTags: ['Apps']
+		}),
 	}),
 });
 
-export const { useAppsQuery} = appsApi;
+export const { useAppsQuery, useCopyMutation, useMoveMutation, useUploadFilesMutation, useCreateDIrectoryMutation, useDeleteMutation } = appsApi;

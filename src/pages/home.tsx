@@ -1,11 +1,11 @@
 import { FC } from "react";
-import AllFiles from "../components/all-files/Allfiles";
 import AppView from "../components/app-view/AppView";
 import { drawerItemType } from "../types/GenericTypes";
+import AllFiles from "../components/all-files/Allfiles";
 
 const drawerItems: drawerItemType[] = [
 	{
-		label: "App",
+		label: "Files",
 		value: "#/home"
 	},
 	{

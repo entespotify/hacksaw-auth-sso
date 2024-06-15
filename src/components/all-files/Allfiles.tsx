@@ -1,69 +1,21 @@
-import { FC, useEffect, useState } from "react";
-import Box from '@mui/material/Box';
-import { DataGrid, GridCallbackDetails, GridColDef, GridRenderCellParams, GridRowParams, MuiEvent } from '@mui/x-data-grid';
+import Checkbox from '@mui/material/Checkbox';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
-import { useDispatch } from "react-redux";
+import { ChangeEvent, FC, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Box } from '@mui/material';
 
-import { useFilesQuery } from "../../services/api/files.api";
 import { FileType } from "../../types/file";
-import FilesToolBar from "../files-toolbar/FilesToolBar";
-import { setPath, setItem } from "../../services/fileSlice";
-import { store } from "../../services/store";
+import { setItem, setPath } from "../../services/fileSlice";
+import { RootState, store } from "../../services/store";
 import { formatBytes, formatDate, join } from "../../services/utils";
+import { NAV_PORTION_OF_VH } from "../../services/constants";
+import FilesToolBar from '../files-toolbar/FilesToolBar';
+import { useFilesQuery } from '../../services/api/files.api';
 
-const filesInit: FileType[] = [];
+const viewSpaceHeight: number = 100 - NAV_PORTION_OF_VH;
 
-const columns: GridColDef<(typeof filesInit)[number]>[] = [
-	{
-		field: 'name',
-		renderHeader: () => {
-			return <>
-				<strong>Name</strong>
-			</>
-		},
-		width: 300,
-		renderCell: (params: GridRenderCellParams<FileType>) => {
-			return <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-				{params.row.type === "folder" ? <FolderIcon /> : <InsertDriveFileIcon />}
-				{params.value}
-			</div>
-		}
-	},
-	{
-		field: 'size',
-		renderHeader: () => {
-			return <>
-				<strong>Size</strong>
-			</>
-		},
-		type: 'number',
-		width: 110,
-		renderCell: (params: GridRenderCellParams<FileType>) => {
-			return <div>
-				{params.row.type === "folder" ? "" : formatBytes(params.value)}
-			</div>
-		}
-	},
-	{
-		field: 'createdAt',
-		renderHeader: () => {
-			return <>
-				<strong>Created</strong>
-			</>
-		},
-		sortable: false,
-		width: 220,
-		renderCell: (params: GridRenderCellParams<FileType>) => {
-			return <div>
-				{formatDate(params.value)}
-			</div>
-		}
-	},
-];
-
-
-const AllFiles: FC = () => {
+const AllApps: FC = () => {
 
 	const [files, setFiles] = useState<FileType[]>([]);
 
@@ -71,17 +23,28 @@ const AllFiles: FC = () => {
 
 	const dispatch = useDispatch();
 
-	const handleRowClick = (params: GridRowParams, event: MuiEvent, details: GridCallbackDetails) => {
-		dispatch(setItem({ item: params.row.name }));
-	}
+	const currentPath = useSelector((state: RootState) => state.files.path);
 
-	const handleRowDoubleClick = (params: GridRowParams) => {
-		let pathname = params.row.name;
-		let type = params.row.type;
+	const handleRowDoubleClick = (file: FileType) => {
+		let pathname = file.name;
+		let type = file.type;
 		if (type === "folder") {
-			let currentPath = store.getState().files.path;
 			dispatch(setPath({ path: join(currentPath, pathname) }));
 			allFiles.refetch();
+		}
+	}
+
+	const handleCheck = (file: FileType, event: ChangeEvent<HTMLInputElement>) => {
+		if (event.target.checked) {
+			console.log("item checked", file.name)
+			dispatch(setItem({ item: file.name }));
+			console.log("current item after setting:", store.getState().files.item)
+			event.target.parentElement?.parentElement?.parentElement?.style
+				.setProperty('background-color', 'rgba(0, 0, 0, 0.04)');
+		} else {
+			dispatch(setItem({ item: "" }));
+			event.target.parentElement?.parentElement?.parentElement?.style
+				.removeProperty('background-color');
 		}
 	}
 
@@ -92,20 +55,40 @@ const AllFiles: FC = () => {
 	}, [allFiles]);
 
 	return (
-		<>
-			<Box sx={{ width: '100%', height: '93.3vh' }}>
-				<DataGrid
-					rows={files}
-					columns={columns}
-					hideFooter
-					slots={{ toolbar: FilesToolBar }}
-					sx={{ cursor: 'pointer' }}
-					onRowClick={handleRowClick}
-					onRowDoubleClick={handleRowDoubleClick}
-				/>
-			</Box>
-		</>
+		<Box sx={{ maxHeight: `${viewSpaceHeight}vh` }}>
+			<FilesToolBar
+				refetch={allFiles.refetch}
+			/>
+			<TableContainer sx={{ maxHeight: `${viewSpaceHeight - 13}vh`, margin: '0 10px', border: '1px solid rgba(224, 224, 224, 1)', maxWidth: '98%', borderRadius: '5px' }}>
+				<Table aria-label="simple table" stickyHeader size="small">
+					<TableHead>
+						<TableRow>
+							<TableCell padding="checkbox"></TableCell>
+							<TableCell><strong>Name</strong></TableCell>
+							<TableCell><strong>Size</strong></TableCell>
+							<TableCell><strong>Created</strong></TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{files.map(file => (
+							<TableRow key={file.name} hover onDoubleClick={() => handleRowDoubleClick(file)}>
+								<TableCell>
+									<Checkbox size='small' onChange={(event) => handleCheck(file, event)} />
+								</TableCell>
+								<TableCell sx={{ cursor: 'pointer' }}>
+									<div style={{ display: 'flex', alignItems: 'flex-end', gap: '5px' }}>
+										{file.type === "folder" ? <FolderIcon /> : <InsertDriveFileIcon />} {file.name}
+									</div>
+								</TableCell>
+								<TableCell>{formatBytes(file.size)}</TableCell>
+								<TableCell>{formatDate(file.createdAt)}</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+		</Box>
 	);
 };
 
-export default AllFiles;
+export default AllApps;

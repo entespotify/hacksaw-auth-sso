@@ -1,5 +1,4 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import Header from "../components/header/Header";
 
 export const ProtectedLayout = () => {
 	const token = localStorage.getItem("token");
@@ -11,7 +10,6 @@ export const ProtectedLayout = () => {
 
 		return (
 			<>
-				{/* <Header /> */}
 				<Outlet />
 			</>
 		)

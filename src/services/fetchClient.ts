@@ -1,7 +1,7 @@
 import { FetchArgs } from "@reduxjs/toolkit/query/react";
 
-const BASE_URL = "http://localhost:4000";
-// const BASE_URL = "http://bullseye.local:4000";
+// const BASE_URL = "http://localhost:4000";
+const BASE_URL = "http://bullseye.local:4000";
 
 const fetchClient = async (args: FetchArgs): Promise<Response> => {
 	let response: Response = new Response();

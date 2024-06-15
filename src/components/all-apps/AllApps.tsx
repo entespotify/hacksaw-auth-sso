@@ -2,45 +2,47 @@ import Checkbox from '@mui/material/Checkbox';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 import { ChangeEvent, FC, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Box } from '@mui/material';
-
 
 import { FileType } from "../../types/file";
 import { setItem, setPath } from "../../services/fileSlice";
-import { store } from "../../services/store";
+import { RootState, store } from "../../services/store";
 import { formatBytes, formatDate, join } from "../../services/utils";
 import { useAppsQuery } from "../../services/api/apps.api";
 import { NAV_PORTION_OF_VH } from "../../services/constants";
-import FilesToolBarV2 from "../files-toolbar/FilesToolBarV2";
-
+import WebToolbar from '../web-toolbar/WebToolBar';
 
 const viewSpaceHeight: number = 100 - NAV_PORTION_OF_VH;
 
 const AllApps: FC = () => {
 
-	const [files, setFiles] = useState<FileType[]>([]);
+	const [apps, setApps] = useState<FileType[]>([]);
 
 	const allApps = useAppsQuery("");
 
 	const dispatch = useDispatch();
 
+	const currentPath = useSelector((state: RootState) => state.files.path);
+
 	const handleRowDoubleClick = (file: FileType) => {
 		let pathname = file.name;
 		let type = file.type;
 		if (type === "folder") {
-			let currentPath = store.getState().files.path;
 			dispatch(setPath({ path: join(currentPath, pathname) }));
 			allApps.refetch();
 		}
 	}
 
-	const handleCheck = (file: FileType, event: ChangeEvent<HTMLInputElement>,) => {
+	const handleCheck = (app: FileType, event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.checked) {
-			dispatch(setItem({ item: file.name }));
+			console.log("item checked", app.name)
+			dispatch(setItem({ item: app.name }));
+			console.log("current item after setting:", store.getState().files.item)
 			event.target.parentElement?.parentElement?.parentElement?.style
 				.setProperty('background-color', 'rgba(0, 0, 0, 0.04)');
 		} else {
+			dispatch(setItem({ item: "" }));
 			event.target.parentElement?.parentElement?.parentElement?.style
 				.removeProperty('background-color');
 		}
@@ -48,13 +50,15 @@ const AllApps: FC = () => {
 
 	useEffect(() => {
 		if (allApps.data) {
-			setFiles(allApps.data.files);
+			setApps(allApps.data.files);
 		}
 	}, [allApps]);
 
 	return (
 		<Box sx={{ maxHeight: `${viewSpaceHeight}vh` }}>
-			<FilesToolBarV2 />
+			<WebToolbar
+				refetch={allApps.refetch}
+			/>
 			<TableContainer sx={{ maxHeight: `${viewSpaceHeight - 13}vh`, margin: '0 10px', border: '1px solid rgba(224, 224, 224, 1)', maxWidth: '98%', borderRadius: '5px' }}>
 				<Table aria-label="simple table" stickyHeader size="small">
 					<TableHead>
@@ -66,7 +70,7 @@ const AllApps: FC = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{files.map(app => (
+						{apps.map(app => (
 							<TableRow key={app.name} hover onDoubleClick={() => handleRowDoubleClick(app)}>
 								<TableCell>
 									<Checkbox size='small' onChange={(event) => handleCheck(app, event)} />
