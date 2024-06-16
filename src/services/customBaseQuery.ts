@@ -17,12 +17,9 @@ const customBaseQuery = async (
 				api.dispatch(login({ token: localToken }));
 			}
 		}
+
 		let headers = {
 			"Authorization": `Bearer ${token}`
-		}
-
-		if (variables.url.includes("/files")) {
-			variables.params.path = variables.params.path ? variables.params.path : '/'
 		}
 
 		let args: FetchArgs = {
@@ -49,7 +46,7 @@ const customBaseQuery = async (
 		}
 		return { data: result };
 	} catch (error: any | Error) {
-		console.log("Error occurred while getting api response:", error);
+		console.error("Error occurred while getting api response:", error);
 		return { error: { status: error.response.status, data: error } };
 	}
 }
