@@ -1,6 +1,6 @@
 import { BaseQueryApi, FetchArgs } from "@reduxjs/toolkit/query/react";
 import { RootState } from "./store";
-import { login, logout } from "./authSlice";
+import { login, logout } from "./slice/authSlice";
 import fetchClient from "./fetchClient";
 
 const customBaseQuery = async (
@@ -21,9 +21,8 @@ const customBaseQuery = async (
 			"Authorization": `Bearer ${token}`
 		}
 
-		if (variables.url === "/files") {
-			console.log("setting query param for request:", (api.getState() as RootState).files.path);
-			variables.params.path = variables.params.path ? variables.params.path : (api.getState() as RootState).files.path
+		if (variables.url.includes("/files")) {
+			variables.params.path = variables.params.path ? variables.params.path : '/'
 		}
 
 		let args: FetchArgs = {

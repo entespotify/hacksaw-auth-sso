@@ -11,13 +11,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect, useRef, MouseEvent } from "react";
 import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
 
-import { setPath } from "../../services/fileSlice";
-import { RootState, store } from "../../services/store";
+import { RootState } from "../../services/store";
 import { join } from "../../services/utils";
 import { BreadcrumbType, DirectoryCreationRequestType, TransferActions, TransferRequestType } from "../../types/file";
-import { useCreateDIrectoryMutation, useUploadFilesMutation } from "../../services/api/files.api";
-import { useCopyMutation, useMoveMutation, useDeleteMutation } from "../../services/api/files.api";
-import { setTransferPath, setTransferItem, setTransferAction } from '../../services/fileSlice';
+import { useCreateDIrectoryMutation, useUploadFilesMutation, useCopyMutation, useMoveMutation, useDeleteMutation } from "../../services/api/files.api";
+import { setPath, setTransferPath, setTransferItem, setTransferAction } from '../../services/slice/fileSlice';
 
 export interface FilesToolBarProps {
     refetch: () => QueryActionCreatorResult<QueryDefinition<any, any, any, any>>
@@ -127,7 +125,6 @@ function FilesToolBarV2(props: FilesToolBarProps) {
     const uploadFile = (file: File, path: string) => {
         let formData = new FormData();
         formData.append("file", file);
-        let currentPath = store.getState().files.path;
         let dirPath = currentPath;
         if (path && path !== '') {
             dirPath += ('/' + path);
@@ -164,7 +161,7 @@ function FilesToolBarV2(props: FilesToolBarProps) {
         if (dirname) {
             let reqDirName: DirectoryCreationRequestType = {
                 dirname: dirname,
-                path: store.getState().files.path
+                path: currentPath
             };
             createDirectory(reqDirName);
         }
@@ -173,7 +170,6 @@ function FilesToolBarV2(props: FilesToolBarProps) {
 
     //paste
     const handlePaste = () => {
-        console.log("params:", transferPath, transferItem, currentPath);
         let transferParams: TransferRequestType = {
             src: join(transferPath, transferItem),
             dest: join(currentPath, transferItem)
@@ -195,7 +191,7 @@ function FilesToolBarV2(props: FilesToolBarProps) {
 
     //delete
     const handleDelete = () => {
-        doDelete({ path: currentPath + '/' + currentItem });
+        doDelete({ path: join(currentPath, currentItem) });
     }
 
     useEffect(() => {

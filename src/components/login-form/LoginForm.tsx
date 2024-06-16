@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useLoginMutation } from '../../services/api/auth.api';
-import { login } from "../../services/authSlice";
+import { login } from "../../services/slice/authSlice";
 
 interface CustomLocationState {
     path: string

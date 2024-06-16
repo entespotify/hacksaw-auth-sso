@@ -11,12 +11,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect, useRef, MouseEvent } from "react";
 import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
 
-import { setPath } from "../../services/fileSlice";
-import { RootState, store } from "../../services/store";
+import { RootState } from "../../services/store";
 import { join } from "../../services/utils";
 import { BreadcrumbType, DirectoryCreationRequestType, TransferActions, TransferRequestType } from "../../types/file";
 import { useCreateDIrectoryMutation, useUploadFilesMutation, useCopyMutation, useMoveMutation, useDeleteMutation } from "../../services/api/apps.api";
-import { setTransferPath, setTransferItem, setTransferAction } from '../../services/fileSlice';
+import { setPath, setTransferPath, setTransferItem, setTransferAction } from '../../services/slice/appSlice';
 
 export interface FilesToolBarProps {
     refetch: () => QueryActionCreatorResult<QueryDefinition<any, any, any, any>>
@@ -39,11 +38,11 @@ function WebToolbar(props: FilesToolBarProps) {
 
     const dispatch = useDispatch();
 
-    const currentPath = useSelector((state: RootState) => state.files.path);
-    const currentItem = useSelector((state: RootState) => state.files.item);
-    const transferAction = useSelector((state: RootState) => state.files.transferAction);
-    const transferPath = useSelector((state: RootState) => state.files.transferPath);
-    const transferItem = useSelector((state: RootState) => state.files.transferItem);
+    const currentPath = useSelector((state: RootState) => state.apps.path);
+    const currentItem = useSelector((state: RootState) => state.apps.item);
+    const transferAction = useSelector((state: RootState) => state.apps.transferAction);
+    const transferPath = useSelector((state: RootState) => state.apps.transferPath);
+    const transferItem = useSelector((state: RootState) => state.apps.transferItem);
 
     const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbType[]>([]);
     const [disableDeleteButton, setDisableDeleteButton] = useState(false);
@@ -126,7 +125,6 @@ function WebToolbar(props: FilesToolBarProps) {
     const uploadFile = (file: File, path: string) => {
         let formData = new FormData();
         formData.append("file", file);
-        let currentPath = store.getState().files.path;
         let dirPath = currentPath;
         if (path && path !== '') {
             dirPath += ('/' + path);
@@ -163,7 +161,7 @@ function WebToolbar(props: FilesToolBarProps) {
         if (dirname) {
             let reqDirName: DirectoryCreationRequestType = {
                 dirname: dirname,
-                path: store.getState().files.path
+                path: currentPath
             };
             createDirectory(reqDirName);
         }
@@ -172,7 +170,6 @@ function WebToolbar(props: FilesToolBarProps) {
 
     //paste
     const handlePaste = () => {
-        console.log("params:", transferPath, transferItem, currentPath);
         let transferParams: TransferRequestType = {
             src: join(transferPath, transferItem),
             dest: join(currentPath, transferItem)
@@ -194,7 +191,7 @@ function WebToolbar(props: FilesToolBarProps) {
 
     //delete
     const handleDelete = () => {
-        doDelete({ path: currentPath + '/' + currentItem });
+        doDelete({ path: join(currentPath, currentItem) });
     }
 
     useEffect(() => {

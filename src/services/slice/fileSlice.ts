@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { TransferActions } from '../types/file';
+import { TransferActions } from '../../types/file';
 
 interface FileState {
 	path: string,

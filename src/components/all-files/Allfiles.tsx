@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Box } from '@mui/material';
 
 import { FileType } from "../../types/file";
-import { setItem, setPath } from "../../services/fileSlice";
-import { RootState, store } from "../../services/store";
+import { setItem, setPath } from "../../services/slice/fileSlice";
+import { RootState } from "../../services/store";
 import { formatBytes, formatDate, join } from "../../services/utils";
 import { NAV_PORTION_OF_VH } from "../../services/constants";
 import FilesToolBar from '../files-toolbar/FilesToolBar';
@@ -19,11 +19,11 @@ const AllApps: FC = () => {
 
 	const [files, setFiles] = useState<FileType[]>([]);
 
-	const allFiles = useFilesQuery("");
+	const currentPath = useSelector((state: RootState) => state.files.path);
+
+	const allFiles = useFilesQuery(currentPath);
 
 	const dispatch = useDispatch();
-
-	const currentPath = useSelector((state: RootState) => state.files.path);
 
 	const handleRowDoubleClick = (file: FileType) => {
 		let pathname = file.name;
@@ -36,9 +36,7 @@ const AllApps: FC = () => {
 
 	const handleCheck = (file: FileType, event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.checked) {
-			console.log("item checked", file.name)
 			dispatch(setItem({ item: file.name }));
-			console.log("current item after setting:", store.getState().files.item)
 			event.target.parentElement?.parentElement?.parentElement?.style
 				.setProperty('background-color', 'rgba(0, 0, 0, 0.04)');
 		} else {

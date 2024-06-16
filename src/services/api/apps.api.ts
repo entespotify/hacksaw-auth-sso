@@ -11,7 +11,7 @@ export const appsApi = createApi({
 		apps: builder.query({
 			query: (path: string) => ({
 				variables: {
-					url: '/files',
+					url: '/web/files',
 					method: 'GET',
 					params: {
 						path: path
@@ -24,7 +24,7 @@ export const appsApi = createApi({
 			query: (uploadType: UploadRequestType) => ({
 				body: uploadType.body,
 				variables: {
-					url: '/upload/file',
+					url: '/web/upload/file',
 					method: 'POST',
 					params: {
 						path: uploadType.path
@@ -37,7 +37,7 @@ export const appsApi = createApi({
 			query: (dirname) => ({
 				body: dirname,
 				variables: {
-					url: '/create/directory',
+					url: '/web/create/directory',
 					method: 'POST'
 				}
 			}),
@@ -47,7 +47,7 @@ export const appsApi = createApi({
 			query: (params: TransferRequestType) => ({
 				body: params,
 				variables: {
-					url: '/copy',
+					url: '/web/copy',
 					method: 'POST'
 				}
 			}),
@@ -57,7 +57,7 @@ export const appsApi = createApi({
 			query: (params: TransferRequestType) => ({
 				body: params,
 				variables: {
-					url: '/move',
+					url: '/web/move',
 					method: 'POST'
 				}
 			}),
@@ -67,7 +67,7 @@ export const appsApi = createApi({
 			query: (path) => ({
 				body: path,
 				variables: {
-					url: '/delete',
+					url: '/web/delete',
 					method: 'POST'
 				}
 			}),

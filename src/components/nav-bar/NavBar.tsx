@@ -10,7 +10,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { logout } from '../../services/authSlice';
+import { logout } from '../../services/slice/authSlice';
 import { NAV_PORTION_OF_VH } from '../../services/constants';
 
 
