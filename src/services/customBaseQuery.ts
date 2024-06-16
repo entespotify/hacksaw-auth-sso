@@ -3,12 +3,19 @@ import { RootState } from "./store";
 import { login, logout } from "./slice/authSlice";
 import fetchClient from "./fetchClient";
 
+/**
+ * Custom base query for all API endpoints
+ * @param param0 request body and variables
+ * @param api base query API object
+ * @returns API response from fetch client
+ */
 const customBaseQuery = async (
 	{ body, variables }: { body?: string | FormData | object, variables?: any },
 	api: BaseQueryApi
 ) => {
 	try {
 
+		//getting auth token from global state or local storage
 		let token: string = (api.getState() as RootState).auth.token;
 		if (!token) {
 			let localToken: string | null = localStorage.getItem('token');
@@ -18,6 +25,7 @@ const customBaseQuery = async (
 			}
 		}
 
+		//setting authorization header
 		let headers = {
 			"Authorization": `Bearer ${token}`
 		}
