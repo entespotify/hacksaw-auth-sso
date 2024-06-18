@@ -2,6 +2,7 @@ import Checkbox from '@mui/material/Checkbox';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 import { ChangeEvent, FC, useEffect, useState } from "react";
+import { useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Box } from '@mui/material';
 
@@ -20,6 +21,8 @@ const AllApps: FC = () => {
 	const [files, setFiles] = useState<FileType[]>([]);
 
 	const currentPath = useSelector((state: RootState) => state.files.path);
+
+	const [searchParams, setSearchParams] = useSearchParams();
 
 	const allFiles = useFilesQuery(currentPath);
 
@@ -51,6 +54,19 @@ const AllApps: FC = () => {
 			setFiles(allFiles.data.files);
 		}
 	}, [allFiles]);
+
+	//listens to changes in path and updates the search params
+	useEffect(() => {
+		let params = { path : currentPath};
+		setSearchParams(params);
+	}, [currentPath]);
+
+	//updates the current path based on search parms on first load
+	useEffect(() => {
+		if(searchParams.has('path') && searchParams.get('path') !== currentPath) {
+			dispatch(setPath({ path: searchParams.get('path') }));
+		}
+	}, []);
 
 	return (
 		<Box sx={{ maxHeight: `${viewSpaceHeight}vh` }}>
