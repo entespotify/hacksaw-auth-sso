@@ -80,9 +80,9 @@ const LoginForm: FC = () => {
                 minHeight="50vh"
                 gap={2}
                 sx={{
-                    minWidth: "50vh",
+                    width: { xs: "80%", sm: 400 }, // Responsive width
                     mx: "auto",
-                    p: 3,
+                    p: { xs: 2, sm: 3 },
                     boxShadow: 6,
                     borderRadius: 3,
                     bgcolor: "background.paper",
