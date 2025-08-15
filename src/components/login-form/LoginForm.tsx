@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -56,17 +56,34 @@ const LoginForm: FC = () => {
     const userInput = useRef<HTMLInputElement>(null);
     const pwdInput = useRef<HTMLInputElement>(null);
 
+    const [error, setError] = useState<string | null>(null);
+
     const handleLogin = async () => {
-        let user = userInput.current?.value;
+        setError(null);
+        let user = userInput.current?.value?.trim();
         let pwd = pwdInput.current?.value;
+
+        if (!user || !pwd) {
+            setError("Please enter both username and password.");
+            return;
+        }
+        // Username validation: at least 3 chars, alphanumeric/underscore
+        if (!/^[a-zA-Z0-9_]{3,}$/.test(user)) {
+            setError("Please enter a valid username (at least 3 characters, letters, numbers, or underscores).");
+            return;
+        }
+
         try {
             const userData = await loginCall({ username: user, password: pwd }).unwrap();
             if (userData) {
                 dispatch(login(userData));
                 navigate(redirectPath ? redirectPath.path : '/home', { replace: true });
+            } else {
+                setError("Login failed. Please try again");
             }
         } catch (error) {
-            console.error("Error:", error);
+            setError("Invalid credentials. Please try again.");
+            console.error("Login error:", error);
         }
     };
 
@@ -80,7 +97,7 @@ const LoginForm: FC = () => {
                 minHeight="50vh"
                 gap={2}
                 sx={{
-                    width: { xs: "80%", sm: 400 }, // Responsive width
+                    width: { xs: "80%", sm: 500 },
                     mx: "auto",
                     p: { xs: 2, sm: 3 },
                     boxShadow: 6,
@@ -105,13 +122,14 @@ const LoginForm: FC = () => {
                 </Typography>
                 <TextField
                     inputRef={userInput}
-                    label="Email"
-                    name="email"
-                    type="email"
+                    label="Username"
+                    name="username"
+                    type="text"
                     variant="outlined"
                     fullWidth
                     autoComplete="username"
                     InputLabelProps={{ style: { color: "#b2dfdb" } }}
+                    error={!!error && !userInput.current?.value}
                 />
                 <TextField
                     inputRef={pwdInput}
@@ -122,7 +140,13 @@ const LoginForm: FC = () => {
                     fullWidth
                     autoComplete="current-password"
                     InputLabelProps={{ style: { color: "#b2dfdb" } }}
+                    error={!!error && !pwdInput.current?.value}
                 />
+                {error && (
+                    <Typography color="error" sx={{ fontSize: 14, mt: -1 }}>
+                        {error}
+                    </Typography>
+                )}
                 <MuiLink
                     component="button"
                     type="button"

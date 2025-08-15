@@ -14,20 +14,22 @@ const customBaseQuery = async (
 	api: BaseQueryApi
 ) => {
 	try {
-
-		//getting auth token from global state or local storage
-		let token: string = (api.getState() as RootState).auth.token;
-		if (!token) {
-			let localToken: string | null = localStorage.getItem('token');
-			if (localToken && localToken !== null) {
-				token = localToken;
-				api.dispatch(login({ token: localToken }));
+		let headers = {}
+		if(!variables?.noAuth) {
+			//getting auth token from global state or local storage
+			let token: string = (api.getState() as RootState).auth.token;
+			if (!token) {
+				let localToken: string | null = localStorage.getItem('token');
+				if (localToken && localToken !== null) {
+					token = localToken;
+					api.dispatch(login({ token: localToken }));
+				}
 			}
-		}
 
-		//setting authorization header
-		let headers = {
-			"Authorization": `Bearer ${token}`
+			//setting authorization header
+			headers = {
+				"Authorization": `Bearer ${token}`
+			}
 		}
 
 		let args: FetchArgs = {
@@ -49,7 +51,7 @@ const customBaseQuery = async (
 			if (response.status === 401 || response.status === 403) {
 				api.dispatch(logout());
 				//done in a dirty way till we figure out a better way to redirect to login
-				window.location.reload();
+				if(!variables.noAuth) window.location.reload();
 			}
 		}
 		return { data: result };
