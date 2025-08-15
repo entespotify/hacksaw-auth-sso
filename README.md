@@ -1,46 +1,101 @@
-# Getting Started with Create React App
+# Hacksaw Auth
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Hacksaw Auth is the central authentication hub for all Hacksaw services. Log in once and access everything, no more juggling passwords, sticky notes, or that one spreadsheet you swore you’d never lose. Built with React, Redux Toolkit, Material UI, and TypeScript.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- Single sign-on for all Hacksaw services
+- Modern dark-themed UI with Material UI
+- Secure token storage and session management
+- Responsive design for desktop and mobile
+- "Forgot password" and "Create account" flows
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🗂️ Folder Structure
 
-### `npm test`
+```
+hacksaw-auth/
+├── public/                   # Static assets and index.html
+├── src/
+│   ├── components/           # Reusable UI components
+│   │   ├── backdrop/
+│   │   └── login-form/
+│   ├── pages/                # App pages (home, login, etc.)
+│   ├── services/
+│   │   ├── api/              # API logic (RTK Query, etc.)
+│   │   └── slice/            # Redux slices (auth, etc.)
+│   ├── App.tsx               # Main app component
+│   ├── index.tsx             # Entry point
+│   └── ...                   # Other utilities and types
+├── package.json
+└── README.md
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 🛠️ Common Commands
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Command              | Description                                  |
+|----------------------|----------------------------------------------|
+| `npm install`        | Install all dependencies                     |
+| `npm start`          | Start the development server                 |
+| `npm run build`      | Build the app for production                 |
+| `npm test`           | Run tests                                    |
+| `npm run deploy`     | Deploy to GitHub Pages (see below)           |
+| `npm run eject`      | Eject from Create React App (irreversible)   |
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🌐 Deployment
 
-### `npm run eject`
+This app is set up for deployment to GitHub Pages.  
+To deploy:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. Set the `homepage` field in `package.json` to your GitHub Pages URL.
+2. Run:
+    ```
+    npm run deploy
+    ```
+3. Or push to `main` branch and let GitHub Actions handle deployment automatically.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 🐞 Debugging & Troubleshooting
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- **TypeScript errors:**  
+  Check the terminal or Problems tab in VS Code for details. Most issues are due to missing types or incorrect imports.
 
-## Learn More
+- **Module not found:**  
+  Run `npm install` to ensure all dependencies are installed.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **UI not updating:**  
+  Make sure you save your files and check the browser console for errors.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Redux/State issues:**  
+  Use the [Redux DevTools](https://github.com/reduxjs/redux-devtools) browser extension to inspect state.
+
+- **Build/Deploy errors:**  
+  - Ensure your `homepage` in `package.json` is correct.
+  - Check GitHub Actions logs under the "Actions" tab in your repo.
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 📚 Learn More
+
+- [React documentation](https://reactjs.org/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [Material UI](https://mui.com/)
+- [Create React App docs](https://facebook.github.io/create-react-app/docs/getting-started)
+
+---
+
+**Enjoy your stay. Your credentials are (probably) safe
