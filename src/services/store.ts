@@ -1,23 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { filesApi } from './api/files.api';
-import { appsApi } from './api/apps.api';
 import { authApi } from './api/auth.api';
 import authSlice from './slice/authSlice';
-import fileSlice from './slice/fileSlice';
-import appSlice from './slice/appSlice';
 
 export const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer,
-    [filesApi.reducerPath]: filesApi.reducer,
-    [appsApi.reducerPath]: appsApi.reducer,
     auth: authSlice,
-    files: fileSlice,
-    apps: appSlice
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, filesApi.middleware, appsApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware),
 })
 setupListeners(store.dispatch)
 

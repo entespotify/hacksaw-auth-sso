@@ -2,11 +2,13 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 
 interface UserState {
-	token: string
+	token: string,
+	refresh: string
 }
 
 const initialState: UserState = {
-	token: ''
+	token: '',
+	refresh: ''
 }
 
 export const authSlice = createSlice({
@@ -15,12 +17,16 @@ export const authSlice = createSlice({
 	reducers: {
 		login: (state, action) => {
 			const auth = action.payload
-			state.token = auth.token
-			localStorage.setItem("token", auth.token)
+			state.token = auth.access
+			state.refresh = auth.refresh
+			localStorage.setItem("token", auth.access)
+			localStorage.setItem("refresh", auth.refresh)
 		},
 		logout: (state) => {
 			state.token = ''
+			state.refresh = ''
 			localStorage.removeItem("token")
+			localStorage.removeItem("refresh")
 		}
 	},
 });
