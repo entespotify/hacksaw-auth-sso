@@ -1,0 +1,72 @@
+name: Build and Upload Artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Extract version from package.json
+        id: get_version
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create version branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b v${{ steps.get_version.outputs.version }}
+          git push origin v${{ steps.get_version.outputs.version }} --force
+
+      - name: Checkout version branch
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ steps.get_version.outputs.version }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build React app
+        run: npm run build
+
+      - name: Prepare files
+        run: |
+          mkdir upload
+          cp $(find build/static/js -type f -name "*.js" | head -n 1) upload/script.js
+          cp $(find build/static/css -type f -name "*.css" | head -n 1) upload/styles.css
+
+      - name: Upload JS
+        run: |
+          RESPONSE=$(curl -s -w "%{http_code}" -o script_upload.json -X POST "https://www.pythonanywhere.com/api/v0/user/${{ vars.CONSOLE_USER_ID }}/files/path/home/${{ vars.CONSOLE_USER_ID }}/resources/v${{ steps.get_version.outputs.version }}/script.js" \
+            -H "Authorization: Token ${{ secrets.CONSOLE_API_KEY }}" \
+            -H "Content-Type: multipart/form-data" \
+            -F "content=@upload/script.js;type=application/javascript"
+          if [ "$RESPONSE" -ne 201 ]; then
+            echo "Script upload step failed (status $RESPONSE)"
+            cat script_upload.json
+          fi
+
+      - name: Upload CSS
+        run: |
+          RESPONSE=$(curl -s -w "%{http_code}" -o script_upload.json -X POST "https://www.pythonanywhere.com/api/v0/user/${{ vars.CONSOLE_USER_ID }}/files/path/home/${{ vars.CONSOLE_USER_ID }}/resources/v${{ steps.get_version.outputs.version }}/styles.css" \
+            -H "Authorization: Token ${{ secrets.CONSOLE_API_KEY }}" \
+            -H "Content-Type: multipart/form-data" \
+            -F "content=@upload/styles.css;type=text/css"
+          if [ "$RESPONSE" -ne 201 ]; then
+            echo "Script upload step failed (status $RESPONSE)"
+            cat script_upload.json
+          fi
