@@ -1,4 +1,4 @@
-name: Build and Upload React App
+name: Build and Upload Artifacts
 
 on:
   push:
