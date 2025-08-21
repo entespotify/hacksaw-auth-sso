@@ -1,6 +1,9 @@
 name: Build and Upload Artifacts
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
@@ -46,37 +49,54 @@ jobs:
       - name: Prepare files
         run: |
           mkdir upload
-          cp $(find build/static/js -type f -name "*.js" | head -n 1) upload/script.js
-          cp $(find build/static/css -type f -name "*.css" | head -n 1) upload/styles.css
 
-      - name: Upload JS
-        run: |
-          RESPONSE=$(curl -s -w "%{http_code}" \
-            -o script_upload.json \
-            -X POST "https://www.pythonanywhere.com/api/v0/user/${{ vars.CONSOLE_USER_ID }}/files/path/home/${{ vars.CONSOLE_USER_ID }}/resources/v${{ steps.get_version.outputs.version }}/script.js" \
-            -H "Authorization: Token ${{ secrets.CONSOLE_API_KEY }}" \
-            -H "Content-Type: multipart/form-data" \
-            -F "content=@upload/script.js;type=application/javascript")
-          if [ "$RESPONSE" -ne 201 ]; then
-            echo "Script upload step failed (status $RESPONSE)"
-            cat script_upload.json
-          else
-            echo "Script uploaded successfully"
-            cat script_upload.json
+          # Handle main script separately
+          MAIN_JS=$(find build/static/js -type f -name "main.*.js" | head -n 1)
+          if [ -n "$MAIN_JS" ]; then
+            cp "$MAIN_JS" upload/script.js
           fi
 
-      - name: Upload CSS
-        run: |
-          RESPONSE=$(curl -s -w "%{http_code}" \
-            -o styles_upload.json \
-            -X POST "https://www.pythonanywhere.com/api/v0/user/${{ vars.CONSOLE_USER_ID }}/files/path/home/${{ vars.CONSOLE_USER_ID }}/resources/v${{ steps.get_version.outputs.version }}/styles.css" \
-            -H "Authorization: Token ${{ secrets.CONSOLE_API_KEY }}" \
-            -H "Content-Type: multipart/form-data" \
-            -F "content=@upload/styles.css;type=text/css")
-          if [ "$RESPONSE" -ne 201 ]; then
-            echo "Styles upload step failed (status $RESPONSE)"
-            cat styles_upload.json
-          else
-            echo "Styles uploaded successfully"
-            cat styles_upload.json
+          # Copy remaining JS chunks with original names
+          for f in build/static/js/*.js; do
+            if [[ "$f" != *"main."* ]]; then
+              cp "$f" upload/$(basename $f)
+            fi
+          done
+
+          # Handle main stylesheet separately
+          MAIN_CSS=$(find build/static/css -type f -name "main.*.css" | head -n 1)
+          if [ -n "$MAIN_CSS" ]; then
+            cp "$MAIN_CSS" upload/styles.css
           fi
+
+          # Copy remaining CSS files with original names
+          for f in build/static/css/*.css; do
+            if [[ "$f" != *"main."* ]]; then
+              cp "$f" upload/$(basename $f)
+            fi
+          done
+
+      - name: Upload files
+        run: |
+          for f in upload/*; do
+            echo "Uploading $f"
+            MIME_TYPE="application/octet-stream"
+            case "$f" in
+              *.js) MIME_TYPE="application/javascript" ;;
+              *.css) MIME_TYPE="text/css" ;;
+            esac
+
+            RESPONSE=$(curl -s -w "%{http_code}" \
+              -o response.json \
+              -X POST "https://www.pythonanywhere.com/api/v0/user/${{ vars.CONSOLE_USER_ID }}/files/path/home/${{ vars.CONSOLE_USER_ID }}/resources/login/v${{ steps.get_version.outputs.version }}/$(basename $f)" \
+              -H "Authorization: Token ${{ secrets.CONSOLE_API_KEY }}" \
+              -H "Content-Type: multipart/form-data" \
+              -F "content=@$f;type=$MIME_TYPE")
+
+            if [ "$RESPONSE" -ne 201 ]; then
+              echo "Upload failed for $f (status $RESPONSE)"
+              cat response.json
+            else
+              echo "Uploaded $f"
+            fi
+          done
