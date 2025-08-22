@@ -1,6 +1,5 @@
 import { FC, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
     Box,
     Button,
@@ -11,13 +10,6 @@ import {
     createTheme,
     Link as MuiLink
 } from "@mui/material";
-
-import { useLoginMutation } from '../../services/api/auth.api';
-import { login } from "../../services/slice/authSlice";
-
-interface CustomLocationState {
-    path: string
-}
 
 const darkTheme = createTheme({
     palette: {
@@ -47,43 +39,47 @@ const darkTheme = createTheme({
 });
 
 const LoginForm: FC = () => {
-    const [loginCall, { isLoading }] = useLoginMutation();
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const location = useLocation();
-    const redirectPath = location.state as CustomLocationState;
 
     const userInput = useRef<HTMLInputElement>(null);
     const pwdInput = useRef<HTMLInputElement>(null);
 
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleLogin = async () => {
         setError(null);
-        let user = userInput.current?.value?.trim();
-        let pwd = pwdInput.current?.value;
+        setIsLoading(true);
+        let username = userInput.current?.value?.trim();
+        let password = pwdInput.current?.value;
 
-        if (!user || !pwd) {
+        if (!username || !password) {
             setError("Please enter both username and password.");
             return;
         }
         // Username validation: at least 3 chars, alphanumeric/underscore
-        if (!/^[a-zA-Z0-9_]{3,}$/.test(user)) {
+        if (!/^[a-zA-Z0-9_]{3,}$/.test(username)) {
             setError("Please enter a valid username (at least 3 characters, letters, numbers, or underscores).");
             return;
         }
 
         try {
-            const userData = await loginCall({ username: user, password: pwd }).unwrap();
-            if (userData) {
-                dispatch(login(userData));
-                navigate(redirectPath ? redirectPath.path : '/home', { replace: true });
+            const res = await fetch("/api/login/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (res.ok) {
+                window.location.href = `/o/authorize${window.location.search}`;
             } else {
                 setError("Login failed. Please try again");
             }
         } catch (error) {
             setError("Invalid credentials. Please try again.");
             console.error("Login error:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
