@@ -64,7 +64,7 @@ const LoginForm: FC = () => {
         }
 
         try {
-            let ssoParams = new URLSearchParams(window.location.search);
+            let ssoParams = decodeURIComponent(window.location.search);
             const res = await fetch("/api/login/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -72,7 +72,7 @@ const LoginForm: FC = () => {
             });
 
             if (res.ok) {
-                window.location.href = `/o/authorize/?${ssoParams.toString()}`;
+                window.location.href = `/o/authorize/${ssoParams.toString()}`;
             } else {
                 setError("Login failed. Please try again");
             }
